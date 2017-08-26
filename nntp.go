@@ -308,14 +308,28 @@ func (c *Conn) Overview(begin, end int64) ([]MessageOverview, error) {
 		}
 		overview.MessageID = ss[4]
 		overview.References = strings.Split(ss[5], " ") // Message-Id's contain no spaces, so this is safe.
-		overview.Bytes, err = strconv.Atoi(ss[6])
-		if err != nil {
-			return nil, ProtocolError("bad byte count '" + ss[6] + "'in line:" + line)
+
+		// can be by corruption empty, so set to -1 for later handling
+		if (len(strings.TrimSpace(ss[6]))) > 0 {
+			overview.Bytes, err = strconv.Atoi(ss[6])
+			if err != nil {
+				return nil, ProtocolError("bad byte count '" + ss[6] + "'in line:" + line)
+			}
+		} else {
+			log.Errorf("byte count is empty reset: %v", line)
+			overview.Bytes = -1
 		}
-		overview.Lines, err = strconv.Atoi(ss[7])
-		if err != nil {
-			return nil, ProtocolError("bad line count '" + ss[7] + "'in line:" + line)
+		// can be by corruption empty, so set to -1 for later handling
+		if (len(strings.TrimSpace(ss[7]))) > 0 {
+			overview.Lines, err = strconv.Atoi(ss[7])
+			if err != nil {
+				return nil, ProtocolError("bad line count '" + ss[7] + "'in line:" + line)
+			}
+		} else {
+			log.Errorf("lines count is empty reset: %v", line)
+			overview.Lines = -1
 		}
+
 		overview.Extra = append([]string{}, ss[8:]...)
 		result = append(result, overview)
 	}
