@@ -301,9 +301,9 @@ func (c *Conn) Overview(begin, end int64) ([]MessageOverview, error) {
 		if err != nil {
 			return nil, ProtocolError("bad byte count '" + ss[6] + "'in line:" + line)
 		}
-		overview.Lines, err = strconv.Atoi(ss[7])
-		if err != nil {
-			return nil, ProtocolError("bad line count '" + ss[7] + "'in line:" + line)
+		// Lines is an optional parameter
+		if ss[7] != "" {
+			overview.Lines, _ = strconv.Atoi(ss[7])
 		}
 		overview.Extra = append([]string{}, ss[8:]...)
 		result = append(result, overview)

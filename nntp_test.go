@@ -177,13 +177,14 @@ Body.`
 	}
 
 	// Overview
-	overviews, err := conn.Overview(10, 11)
+	overviews, err := conn.Overview(10, 12)
 	if err != nil {
 		t.Fatal("overview shouldn't error: " + err.Error())
 	}
 	expectedOverviews := []MessageOverview{
 		MessageOverview{10, "Subject10", "Author <author@server>", time.Date(2003, 10, 18, 18, 0, 0, 0, time.FixedZone("", 1800)), "<d@e.f>", []string{}, 1000, 9, []string{}},
 		MessageOverview{11, "Subject11", "", time.Date(2003, 10, 18, 19, 0, 0, 0, time.FixedZone("", 1800)), "<e@f.g>", []string{"<d@e.f>", "<a@b.c>"}, 2000, 18, []string{"Extra stuff"}},
+		MessageOverview{12, "Subject12", "", time.Date(2003, 10, 18, 19, 0, 0, 0, time.FixedZone("", 1800)), "<e@f.g>", []string{"<d@e.f>", "<a@b.c>"}, 2000, 0, []string{"Extra stuff"}},
 	}
 
 	if len(overviews) != len(expectedOverviews) {
@@ -296,6 +297,7 @@ tx.natives.recovery 89 56 y
 224 Overview information for 10-11 follows1
 10	Subject10	Author <author@server>	Sat, 18 Oct 2003 18:00:00 +0030	<d@e.f>		1000	9
 11	Subject11		18 Oct 2003 19:00:00 +0030	<e@f.g>	<d@e.f> <a@b.c>	2000	18	Extra stuff
+12	Subject12		18 Oct 2003 19:00:00 +0030	<e@f.g>	<d@e.f> <a@b.c>	2000		Extra stuff
 .
 290 Feature enabled
 224 xover information follows [COMPRESS=GZIP]
@@ -327,7 +329,7 @@ BODY 500
 NEWNEWS gmane.comp.lang.go.general 20100301 000000 GMT
 NEWGROUPS 20100301 000000 GMT
 NEWGROUPS 20100301 000000 GMT
-XOVER 10-11
+XOVER 10-12
 XFEATURE COMPRESS GZIP
 XOVER 10-11
 QUIT
