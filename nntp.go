@@ -15,8 +15,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	log "github.com/Sirupsen/logrus"
 )
 
 // timeFormatNew is the NNTP time format string for NEWNEWS / NEWGROUPS
@@ -96,25 +94,21 @@ func newClient(conn *textproto.Conn) (*Conn, error) {
 // 200 (inclusive) to 300 (exclusive) will be success.  An expectCode
 // of -1 disables this behavior.
 func (c *Conn) Command(cmd string, expectCode int) (int, string, error) {
-	log.Infof("client: %s", cmd)
 	err := c.conn.PrintfLine(cmd)
 	if err != nil {
 		return 0, "", err
 	}
 	code, msg, err := c.conn.ReadCodeLine(expectCode)
-	log.Infof("server code: %d, msg: %s, err: %v", code, msg, err)
 	return code, msg, err
 }
 
 // MultilineCommand wraps the functionality to
 func (c *Conn) MultilineCommand(cmd string, expectCode int) (int, []string, error) {
-	log.Infof("client: %s", cmd)
 	err := c.conn.PrintfLine(cmd)
 	if err != nil {
 		return 0, nil, err
 	}
 	rc, l, err := c.conn.ReadCodeLine(expectCode)
-	log.Infof("server code: %d, msg: %s, err: %v", rc, l, err)
 	if err != nil {
 		return rc, nil, err
 	}
@@ -122,9 +116,6 @@ func (c *Conn) MultilineCommand(cmd string, expectCode int) (int, []string, erro
 	ls, err := c.conn.ReadDotLines()
 	if err != nil {
 		return rc, nil, err
-	}
-	for _, line := range ls {
-		log.Debugf("server: %v", line)
 	}
 	lines = append(lines, ls...)
 	return rc, lines, err
@@ -263,7 +254,6 @@ func (c *Conn) Overview(begin, end int64) ([]MessageOverview, error) {
 	result := []MessageOverview{}
 	var lines []string
 	if c.compress {
-		log.Debugf("Reading compressed data")
 		zr, err := zlib.NewReader(c.conn.R)
 		if err != nil {
 			return nil, err
@@ -281,7 +271,6 @@ func (c *Conn) Overview(begin, end int64) ([]MessageOverview, error) {
 		c.conn.ReadLine()
 	} else {
 		lines, err = c.conn.ReadDotLines()
-		log.Debugf("Read %d lines from connection", len(lines))
 		if err != nil {
 			return nil, err
 		}
