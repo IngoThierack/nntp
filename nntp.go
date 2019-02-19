@@ -302,14 +302,10 @@ func (c *Conn) Overview(begin, end int64) ([]MessageOverview, error) {
 		}
 		overview.MessageID = ss[4]
 		overview.References = strings.Split(ss[5], " ") // Message-Id's contain no spaces, so this is safe.
-		overview.Bytes, err = strconv.Atoi(ss[6])
-		if err != nil {
-			return nil, ProtocolError("bad byte count '" + ss[6] + "'in line:" + line)
-		}
-		// Lines is an optional parameter
-		if ss[7] != "" {
-			overview.Lines, _ = strconv.Atoi(ss[7])
-		}
+
+		overview.Bytes, _ = strconv.Atoi(ss[6])
+		overview.Lines, _ = strconv.Atoi(ss[7])
+
 		overview.Extra = append([]string{}, ss[8:]...)
 		result = append(result, overview)
 	}
