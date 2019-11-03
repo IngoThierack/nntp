@@ -76,6 +76,11 @@ func NewTLS(net, addr string, cfg *tls.Config) (*Conn, error) {
 	return newClient(textproto.NewConn(c))
 }
 
+// NewFromConn creates a new NNTP client using the given connection
+func NewFromConn(conn io.ReadWriteCloser) (*Conn, error) {
+	return newClient(textproto.NewConn(conn))
+}
+
 func newClient(conn *textproto.Conn) (*Conn, error) {
 	_, msg, err := conn.ReadCodeLine(200)
 	if err != nil {
